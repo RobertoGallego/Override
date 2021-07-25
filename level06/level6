@@ -1,0 +1,102 @@
+level06
+
+----- CAT -----
+
+.---------------------------.| !! TAMPERING DETECTED !!  |'---------------------------'************************************          
+level06           *-> Enter Login: ***** NEW ACCOUNT DETECTED ********-> Enter Serial: Authenticated!/bi                                                                                                                      in/sh
+
+[32m.---------------------------.
+[31m| !! TAMPERING DETECTED !!  |
+[32m'---------------------------'
+***********************************
+*               level06           *
+-> Enter Login:
+***** NEW ACCOUNT DETECTED ********
+-> Enter Serial:
+Authenticated!
+/bin/sh
+
+----- EXEC -----
+
+Enter login: 31-32
+
+we have two inputs login and password
+
+----- GDB -----
+
+0x080486b4  clear_stdin
+0x080486d7  get_unum
+0x0804870f  prog_timeout
+0x08048720  enable_timeout_cons
+0x08048748  auth
+0x08048879  main
+
+main call to auth we can see that auth strnlen first arg1 with 0x20 (32)
+then compare this strnlen value with > 5  
+then we have a call function to ptrace if we want to pass in the auth we need to pass it to this ptrace or we go to call again
+auth so after ptrace we have a cpm than compare eax with 0xffffffff passing that we go to have another cpm
+
+0x08048796 <+78>:    mov    DWORD PTR [esp+0xc],0x0
+0x0804879e <+86>:    mov    DWORD PTR [esp+0x8],0x1
+0x080487a6 <+94>:    mov    DWORD PTR [esp+0x4],0x0
+0x080487ae <+102>:   mov    DWORD PTR [esp],0x0
+0x080487b5 <+109>:   call   0x80485f0 <ptrace@plt>
+0x080487ba <+114>:   cmp    eax,0xffffffff <---
+
+
+0x8048863 we can see a cpm between the arg with var_10h (ebp-0x10)
+0x08048863 <+283>:   mov    eax,DWORD PTR [ebp+0xc]
+0x08048866 <+286>:   cmp    eax,DWORD PTR [ebp-0x10] cmp serial with hash(login)
+
+so first we must set $eax registers to 0 for the cpm then we can verify what is the value that auth is returning passing this cmp
+
+STEPS ---------------
+gdb> b *0x080487ba
+gdb> b *0x08048866
+r
+groberto 
+gg
+i registers
+set $eax=0
+c
+x/xw $ebp-0x10
+0xffffd618:     0x005f2169
+p 0x005f2169
+$1 = 6234473
+
+
+-------------
+
+set $eax = 0xffffffff
+i registers
+p 0xffffffff
+$3 = 4294967295
+
+
+x/d $ebp-0x10
+0xffffd618:     6234473
+
+x/xw $ebp-0x10
+0xffffd618:     0x005f2169
+(gdb) p 0x005f2169
+$1 = 6234473
+
+
+----- FLAG -----
+GbcPDRgsFK77LNnnuh7QyFYA2942Gp8yKj9KrWD8
+----- INFO -----
+
+./level06
+***********************************
+*               level06           *
+***********************************
+-> Enter Login: groberto
+***********************************
+***** NEW ACCOUNT DETECTED ********
+***********************************
+-> Enter Serial: 6234473
+Authenticated!
+$ whoami
+level07
+$ cat /home/users/level07/.pass
+GbcPDRgsFK77LNnnuh7QyFYA2942Gp8yKj9KrWD8

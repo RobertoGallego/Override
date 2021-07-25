@@ -1,0 +1,89 @@
+level03
+
+----- STRINGS / CAT -----
+
+Congratulations!
+/bin/sh
+Invalid Password
+***********************************
+*               level03         **
+Password:
+
+CAT: **Password: %d
+
+----- EXEC -----
+
+----- GDB -----
+
+----- FLAG -----
+
+----- INFO -----
+
+0x080485f4  clear_stdin
+0x08048617  get_unum
+0x0804864f  prog_timeout
+0x08048660  decrypt              call   0x80484e0 <system@plt>
+0x08048747  test                 to decrypt
+0x0804885a  main                 to test
+
+
+Q}|u`sfg~sf{}|a3
+
+strcpm s1 and s2
+
+Summing it all up we have to find a value which turns the string Q}|u`sfg~sf{}|a3 into Congratulations!
+when being XORed with this value. This is quite easy because we can just XOR both strings and see what the result is:
+
+python
+>>> s1 = "Q}|u`sfg~sf{}|a3"
+>>> s2 = "Congratulations!"
+>>> [ord(a) ^ ord(b) for a,b in zip(s1,s2)]
+[18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18]
+
+So the value we are looking for is 18 (= 0x12). As we already figured out the value passed 
+to the function decrypt is calculated by subtracting our input value from 0x1337d00d. Thus we need to enter:
+
+0x1337d00d - 0x12 = 0x1337cffb = 322424827
+
+ord convert char to int
+xor Bitwise XOR sets the bits in the result to 1 if either, but not both, of the corresponding bits in the two operands is 1.
+
+int userinput;
+printf("Password: ");
+scanf("%d", &userinput);
+test(userinput, 0x1337d00d);
+
+we need to find how we can transforms Q}|u`sfg~sf{}|a3 in congratulation with XOR that is equal to 18 each so we get the value 
+0x1337d00d - 0x12 = 0x1337cffb = 322424827
+
+ascii int
+102   66    42    B
+121   81    51    Q
+
+18 = 0x12
+
+0x1337d00d - 0x12 = 0x1337cffb = 322424827
+
+0x1337d00d - 0x12 = 0x1337CFFB
+p = 322424827
+
+https://devel0pment.de/?p=4
+https://beginnersbook.com/2019/03/python-ord-function/
+https://stackoverflow.com/questions/2612720/how-to-do-bitwise-exclusive-or-of-two-strings-in-python
+https://www.programiz.com/python-programming/methods/built-in/zip
+https://python-reference.readthedocs.io/en/latest/docs/operators/bitwise_XOR.html
+
+r2 already displays that the first string being compared contains Congratulations!. The second string stored at ebp-local_7_1 is the string that has just been XORed in the loop. After the call to strcmp the result is evaluted:
+
+If the strings are not equal Invalid Password! is printed and the function returns. If the strings match a call to system spawns our desired shell. Thus we can complete your decrypt function:
+
+Summing it all up we have to find a value which turns the string Q}|u`sfg~sf{}|a3 into Congratulations! when being XORed with this value. This is quite easy because we can just XOR both strings and see what the result is:
+
+So the value we are looking for is 18 (= 0x12). As we already figured out the value passed to the function decrypt is calculated by subtracting our input value from 0x1337d00d. Thus we need to enter:
+
+
+
+$ whoami
+    level04
+cat /home/users/level04/.pass
+    kgv3tkEb9h2mLkRsPkXRfc2mHbjMxQzvb2FrgKkf
